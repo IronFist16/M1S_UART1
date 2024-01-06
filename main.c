@@ -20,8 +20,6 @@
 #define TX_BUSY_PULSE_DURATION 75
 #define TX_SENDING_PULSE_DURATION 100
 
-#define UART1_BASE_TRUE                  ((uint32_t)0x2000a100)
-
 static void GPIO_init_test(GLB_GPIO_Type pin)
 {
     GLB_GPIO_Cfg_Type cfg;
@@ -79,20 +77,7 @@ static void uart_gpio_init_v1(uint8_t tx_pin, uint8_t rx_pin)
 {
     GLB_GPIO_Cfg_Type cfg;
 
-    //uint32_t gpioTxGLBCfgAddress, gpioRxGLBCfgAddress;
-    uint32_t tmpVal;    
-    //uint8_t sigTx, sigRx;
-    //uint8_t sigPosTx, sigPosRx;
-
-    //sigTx = tx_pin % 12;
-    //sigRx = rx_pin % 12;
-    //sigPosTx = sigTx << 2;
-    //sigPosRx = sigRx << 2;
-    //gpioTxGLBCfgAddress = UART0_BASE + GLB_UART_CFG1_OFFSET
-    //tmpVal = BL_RD_WORD(gpioTxGLBCfgAddress);
-    //tmpVal &= (~(0x0f << sig_pos));
-    //tmpVal |= (GLB_UART_SIG_FUN_UART0_TXD << sig_pos);
-
+    uint32_t tmpVal;   
 
     vTaskDelay(500);
 
@@ -103,69 +88,28 @@ static void uart_gpio_init_v1(uint8_t tx_pin, uint8_t rx_pin)
     cfg.gpioMode = GPIO_MODE_AF;
     cfg.gpioFun = GPIO_FUN_UART;
     cfg.gpioPin = tx_pin;
-    //cfg.gpioMode = GPIO_OUTPUT_VALUE_MODE;
-    //cfg.gpioMode = GPIO_FUN_GPIO;
+
     GLB_GPIO_Init(&cfg);
-    //cfg.gpioMode = GPIO_MODE_INPUT;
+
     cfg.gpioPin = rx_pin;
     GLB_GPIO_Init(&cfg);
-
-    // tmpVal = BL_RD_REG(UART0_BASE, GLB_UART_CFG1);
-    // printf("UART0_BASE = 0x%08X\r\n", UART0_BASE);
-    // printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG1_OFFSET);
-    // printf("Value of UART0_CFG = 0x%08X\r\n", tmpVal);
-
-    // tmpVal = BL_RD_REG(UART1_BASE, GLB_UART_CFG1);
-    // printf("UART1_BASE_TRUE = 0x%08X\r\n", UART1_BASE);
-    // printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG1_OFFSET);
-    // printf("Value of UART1_CFG = 0x%08X\r\n", tmpVal);
-
-    // tmpVal = BL_RD_REG(UART1_BASE_TRUE, GLB_UART_CFG1);
-    // printf("UART1_BASE_TRUE = 0x%08X\r\n", UART1_BASE_TRUE);
-    // printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG1_OFFSET);
-    // printf("Value of UART1_CFG(TRUE) = 0x%08X\r\n", tmpVal);
-
-    //GLB_Set_UART_CLK(ENABLE, HBN_UART_CLK_160M, 3);
 
     tmpVal = BL_RD_REG(GLB_BASE, GLB_UART_CFG1);
     printf("GLB_BASE = 0x%08X\r\n", GLB_BASE);
     printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG1_OFFSET);
     printf("Value of UART1_CFG = 0x%08X\r\n", tmpVal);
 
-    // tmpVal = BL_RD_REG(UART3_BASE, GLB_UART_CFG2);
-    // printf("UART3_BASE_TRUE = 0x%08X\r\n", UART3_BASE);
-    // printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG2_OFFSET);
-    // printf("Value of UART3_CFG = 0x%08X\r\n", tmpVal);
-
-    // tmpVal = BL_RD_REG(UART4_BASE, GLB_UART_CFG2);
-    // printf("UART4_BASE_TRUE = 0x%08X\r\n", UART4_BASE);
-    // printf("GLB_UART_CFG1_OFFSET = 0x%08X\r\n", GLB_UART_CFG2_OFFSET);
-    // printf("Value of UART4_CFG = 0x%08X\r\n", tmpVal);
-
-    // tmpVal = BL_SET_REG_BITS_VAL(tmpVal, GLB_UART_SIG_2_SEL, GLB_UART_SIG_FUN_UART1_TXD);
-    // BL_WR_REG(GLB_BASE, GLB_UART_CFG1, tmpVal);
-    //printf("Value of tmpVal = 0x%08X\r\n", tmpVal);
     GLB_UART_Fun_Sel(GLB_UART_SIG_2, GLB_UART_SIG_FUN_UART1_TXD);
     tmpVal = BL_RD_REG(GLB_BASE, GLB_UART_CFG1);
     printf("Value of UART1_CFG = 0x%08X\r\n", tmpVal);
-
-    // tmpVal = BL_SET_REG_BITS_VAL(tmpVal, GLB_UART_SIG_3_SEL, GLB_UART_SIG_FUN_UART1_RXD);
-    // BL_WR_REG(GLB_BASE, GLB_UART_CFG1, tmpVal);
-    // printf("Value of tmpVal = 0x%08X\r\n", tmpVal);
+    
     GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);    
     tmpVal = BL_RD_REG(GLB_BASE, GLB_UART_CFG1);
     printf("Value of UART1_CFG = 0x%08X\r\n", tmpVal);
-
     
     printf("INIT GPIO UART PINS TX & RX...[OK]\r\n");
 
 }
-
-static void uart_gpio_init_v2(GLB_GPIO_Type *pinList)
-{
-    GLB_GPIO_Func_Init(GPIO_FUN_UART, pinList, 2);
-}
-
 
 static void uart0_init()
 {
@@ -243,8 +187,6 @@ static void uart0_init()
 static void uart0_test_tx()
 {
 
-    //GLB_GPIO_Type *pinList = {PIN_TX, PIN_RX};
-    //uart_gpio_init_v1(PIN_TX, PIN_RX);
     uint8_t *buf = calloc(TX_BUF_LEN, sizeof(uint8_t));
     uint8_t send_result = SUCCESS;
 
@@ -300,10 +242,6 @@ static void uart0_test_tx()
 
 void main()
 {
-    // while(1){
-    //     printf("Hello\r\n");
-    //     vTaskDelay(1000);
-    // }
     printf("Hello\r\n");
     vTaskDelay(1000);
     uart0_init();
