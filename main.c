@@ -23,8 +23,7 @@
 #define TX_BUSY_PULSE_DURATION 75
 #define TX_SENDING_PULSE_DURATION 100
 
-//#define UART1_BASE_TRUE                  ((uint32_t)0x2000a100)
-#define UART1_BASE_TRUE  UART1_BASE
+//UART_BASE address was updated in the SDK to (uint32_t)0x2000a100)
 
 static void GPIO_init_test(GLB_GPIO_Type pin)
 {
@@ -285,6 +284,7 @@ void main()
     uint8_t list_pins[] = {6, 7, 8, 33, 14, 15, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23,
                         41, 40, 11, 12 ,13, 18, 19, 20, 21, 22};
     uint8_t current_pin;
+    GPIO_init_test((GLB_GPIO_Type)PIN_DEBUG);
     bl_uart_gpio_init(UART1_ID, PIN_TX, PIN_RX, 0, 0, UART_BAUD);
     uart0_init(UART1_ID);
     debug_uart_cr();
