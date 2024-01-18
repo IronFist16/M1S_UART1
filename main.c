@@ -42,30 +42,6 @@ static void GPIO_init_test(GLB_GPIO_Type pin)
 
 }
 
-static void gpio_test(GLB_GPIO_Type pin)
-{
-    printf("Hello\r\n");
-    GPIO_init_test(pin);
-    while(1)
-    {
-        GLB_GPIO_Write(pin, 0);
-        vTaskDelay(pdMS_TO_TICKS(250));
-        GLB_GPIO_Write(pin, 1);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    };
-
-}
-
-static void gpio_test_short(GLB_GPIO_Type pin)
-{
-    GPIO_init_test(pin);
-    GLB_GPIO_Write(pin, 0);
-    vTaskDelay(pdMS_TO_TICKS(100));
-    GLB_GPIO_Write(pin, 1);
-    vTaskDelay(pdMS_TO_TICKS(200));
-    GLB_GPIO_Write(pin, 0);
-}
-
 static void gpio_output_debug(GLB_GPIO_Type pin, uint16_t pulseDuration)
 {
     GLB_GPIO_Write(pin, 0);
@@ -73,22 +49,6 @@ static void gpio_output_debug(GLB_GPIO_Type pin, uint16_t pulseDuration)
     GLB_GPIO_Write(pin, 1);
     vTaskDelay(pdMS_TO_TICKS(pulseDuration));
     GLB_GPIO_Write(pin, 0);
-}
-
-static int uart_func_get(uint8_t id, GLB_UART_SIG_FUN_Type uartfunc)
-{
-    switch (id) {
-        case 0:
-            return uartfunc;
-        case 1:
-            return (GLB_UART_SIG_FUN_UART1_RTS - GLB_UART_SIG_FUN_UART0_RTS) * 1 + uartfunc;
-        case 2:
-            return (GLB_UART_SIG_FUN_UART1_RTS - GLB_UART_SIG_FUN_UART0_RTS) * 1 + uartfunc;
-        default:
-            /*empty here*/
-            //TODO should assert here?
-            return uartfunc;
-    }
 }
 
 
@@ -322,39 +282,24 @@ static void uart0_test_tx(UART_ID_Type uart_id)
 
 void main()
 {
-    // while(1){
-    //     printf("Hello\r\n");
-    //     vTaskDelay(1000);
-    // }
     uint8_t list_pins[] = {6, 7, 8, 33, 14, 15, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23,
                         41, 40, 11, 12 ,13, 18, 19, 20, 21, 22};
     uint8_t current_pin;
-    printf("Hello\r\n");
-    /*
-    printf("UART_DEBUG_ID = %d\r\n", UART_DBG_ID);
-    printf("BFLB_UART_DBG_RX_GPIO = %d\r\n", BFLB_UART_DBG_RX_GPIO);
-    printf("BFLB_UART_DBG_RX_SIG = %d\r\n", BFLB_UART_DBG_RX_SIG);
-    printf("BFLB_UART_DBG_RX_SIG_FUN = %d\r\n", BFLB_UART_DBG_RX_SIG_FUN);
-    printf("BFLB_UART_DBG_TX_GPIO = %d\r\n", BFLB_UART_DBG_TX_GPIO);
-    printf("BFLB_UART_DBG_TX_SIG = %d\r\n", BFLB_UART_DBG_TX_SIG);
-    printf("BFLB_UART_DBG_TX_SIG_FUN = %d\r\n", BFLB_UART_DBG_TX_SIG_FUN);
-    */
-    vTaskDelay(3000);
-    //bl_uart_gpio_init(UART1_ID, PIN_TX, PIN_RX, 0, 0, UART_BAUD);
-    //uart0_init(UART1_ID);
-    //debug_uart_cr();
-    //uart0_test_tx(UART1_ID);
+    bl_uart_gpio_init(UART1_ID, PIN_TX, PIN_RX, 0, 0, UART_BAUD);
+    uart0_init(UART1_ID);
+    debug_uart_cr();
+    uart0_test_tx(UART1_ID);
 
-    for (uint8_t i = 0; i < sizeof(list_pins)/sizeof(list_pins[0]); i++)
-    {
-        current_pin = list_pins[i];
-        GPIO_init_test((GLB_GPIO_Type)current_pin);
-        printf("Testing Pin %d...", current_pin);
-        gpio_test_short((GLB_GPIO_Type)current_pin);
-        vTaskDelay(500);
-        printf("[OK]\r\n");
-        vTaskDelay(2000);
-    }
+    // for (uint8_t i = 0; i < sizeof(list_pins)/sizeof(list_pins[0]); i++)
+    // {
+    //     current_pin = list_pins[i];
+    //     GPIO_init_test((GLB_GPIO_Type)current_pin);
+    //     printf("Testing Pin %d...", current_pin);
+    //     gpio_test_short((GLB_GPIO_Type)current_pin);
+    //     vTaskDelay(500);
+    //     printf("[OK]\r\n");
+    //     vTaskDelay(2000);
+    // }
 
 }
 
